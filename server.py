@@ -34,9 +34,11 @@ class Response :
         texte = json.dumps(data, ensure_ascii=False)
         if headers is None:
             headers = {}
+        else :
+            headers = dict(headers)  # Create a copy to avoid modifying the caller's dictionary
         headers['Content-Type'] = 'application/json; charset=utf-8'
         return cls(statut_code, texte, headers)
-
+    
 
 class Handler(BaseHTTPRequestHandler):
 
@@ -109,7 +111,8 @@ def api_test(request):
 
 def verifier(request):
     data = request.json()
-    if data is None:    
+   
+    if data is None or not isinstance(data, dict):
         return Response.json({"error": "Invalid JSON"}, statut_code=400)
 
     if "code" not in data or "quantite" not in data:
